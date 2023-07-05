@@ -65,7 +65,6 @@ describe('Issue create', () => {
       cy.get('[data-testid="select:type"]').click();
       cy.get('[data-testid="select-option:Bug"]')
           .trigger('click');
-      cy.pause()      
       cy.get('.ql-editor').type('My bug description');
       cy.get('input[name="title"]').type('Bug');
       cy.get('[data-testid="select:reporterId"]').click();
