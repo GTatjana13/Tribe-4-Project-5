@@ -59,7 +59,8 @@ describe('Issue create', () => {
     });
   });
 
-  it('Should create an issue and validate it successfully', () => {
+
+  it('Should create a Bug report and validate it successfully', () => {
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       
       cy.get('[data-testid="select:type"]').click();
@@ -91,12 +92,13 @@ describe('Issue create', () => {
     });
   });
 
+
   it('Should create an issue with random data and validate it successfully', () => {
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       
       
-      cy.get('.ql-editor').type(`${randomDescription}`);
-      cy.get('input[name="title"]').type(`${randomTitle}`);
+      cy.get('.ql-editor').type(randomDescription);
+      cy.get('input[name="title"]').type(randomTitle);
 
       cy.get('[data-testid="select:reporterId"]').click();
       cy.get('[data-testid="select-option:Baby Yoda"]').click();
@@ -116,7 +118,7 @@ describe('Issue create', () => {
           .should('have.length', '5')
           .first()
           .find('p')
-          .contains(`${randomTitle}`);
+          .contains(randomTitle);
       cy.get('[data-testid="icon:task"]').should('be.visible');
     });
   });
