@@ -96,7 +96,6 @@ describe('Issue create', () => {
   it('Should create an issue with random data and validate it successfully', () => {
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       
-      
       cy.get('.ql-editor').type(randomDescription);
       cy.get('input[name="title"]').type(randomTitle);
 
@@ -124,7 +123,7 @@ describe('Issue create', () => {
   });
 
 
-  it('Should validate title is required field if missing', () => {
+  it.only('Should validate title is required field if missing', () => {
     //System finds modal for creating issue and does next steps inside of it
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       //Try to click create issue button without filling any data
