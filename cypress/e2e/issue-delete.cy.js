@@ -1,38 +1,57 @@
-import IssueModal from "../pages/IssueModal.js";
-  
+//import IssueModal from "../pages/IssueModal";
+//let createIssue = createIssueDetails
+describe('Issue deleting', () => {
+    
+    const modalIssueDetails = '[data-testid="modal:issue-details"]';
     const modalConfirm = '[data-testid="modal:confirm"]';
-     
+    const backlogList = '[data-testid="board-list:backlog"]';
+    const listIssue = '[data-testid="list-issue"]';
     beforeEach(() => {
         cy.visit('/');
-        cy.url().should('eq', `${Cypress.env('baseUrl')}project/board`).then((url) => {
-            //System will already open issue modal in beforeEach block  
-            cy.visit(url + '/board');
+        cy.url().should('eq', `${Cypress.env('baseUrl')}project`).then((url) => {
+          cy.visit(url + '/board');
         });
-        cy.contains('This is an issue of type: Task.').click();
-
-        //Assert that detail modal is visible
-        IssueModal.getIssueDetailModal();
+        //Make sure that BACKLOG list has 4 issues
+        cy.get(backlogList).should('be.visible').and('have.length', '1').within(() => {
+            cy.get(listIssue).should('have.length', '4')
+        });
+        //Opening the first issue
+        cy.get(listIssue).first().click()
+        cy.get(modalIssueDetails).should('be.visible')
     });
-
-
-    it('Delete the issue successfully', () => {
-        IssueModal.clickDeleteButton();
-        IssueModal.confirmDeletion();
-
+  
+    it('Should delete first issue successfully', () => {
+        //Press the trash icon
+        cy.get(modalIssueDetails).within(() => {
+          cy.get('[data-testid="icon:trash"]').click();  
+        });
+        //Confirm deletion 
+        cy.get(modalConfirm).within(() => {
+            cy.contains('button', 'Delete issue').click()
+        });
         //Assert the pop-window disappeared
         cy.get(modalConfirm).should('not.exist');
-
-        //Assert the issue is deleted
-        IssueModal.ensureIssueIsNotVisibleOnBoard('This is an issue of type: Task.');
+        //Assert the issue is deleted from the board
+        cy.get(backlogList).should('be.visible').and('have.length', '1').within(() => {
+            cy.get(listIssue).should('have.length', '3')
+        });
     });
 
-    
-    it('Starting the deleting issue process, but cancelling this action', () => {
-        IssueModal.clickDeleteButton();
-        IssueModal.cancelDeletion();
-        IssueModal.closeDetailModal();
-        IssueModal.ensureIssueIsVisibleOnBoard('This is an issue of type: Task.'); 
+    it('Cancel deleting issue process', () => {
+        cy.get(modalIssueDetails).within(() => {
+          cy.get('[data-testid="icon:trash"]').click(); 
+        });
+        //cancel deletion
+        cy.get(modalConfirm).within(() => {
+        cy.contains('button', 'Cancel').click()
+        });
+        //Assert the pop-window disappeared
+        cy.get(modalConfirm).should('not.exist');
+        //close the issue to return back to the Jira board
+        cy.get('[data-testid="icon:close"]').first().click()
+        //Assert the issue is NOT deleted from the board
+        cy.get(backlogList).should('be.visible').and('have.length', '1').within(() => {
+            cy.get(listIssue).should('have.length', '4')
+        });
     });
-
-        
-
+})
