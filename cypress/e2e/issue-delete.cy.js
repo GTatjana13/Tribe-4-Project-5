@@ -21,7 +21,6 @@ describe('Issue deleting', () => {
     });
   
     it('Should delete first issue successfully', () => {
-        //Press the trash icon
         cy.get(modalIssueDetails).within(() => {
           cy.get('[data-testid="icon:trash"]').click();  
         });
