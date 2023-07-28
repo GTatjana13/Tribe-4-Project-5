@@ -106,6 +106,15 @@ class IssueModal {
         cy.get(this.issueDetailModal).get(this.closeDetailModalButton).first().click();
         cy.get(this.issueDetailModal).should('not.exist');
     }
+
+    checkIssueVisibilityOnBoard(issueTitle, isVisible = true) {
+        cy.get(this.issueDetailModal).should('not.exist');
+        cy.reload();
+        if(isVisible)
+          cy.contains(issueTitle).should('be.visible');
+        else
+        cy.contains(issueTitle).should('not.exist');
+      }
 }
 
 export default new IssueModal();

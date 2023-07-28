@@ -12,18 +12,13 @@ describe('Issue deleting', () => {
       cy.url().should('eq', `${Cypress.env('baseUrl')}project`).then((url) => {
         cy.visit(url + '/board');
       });
-      //Make sure that BACKLOG list has 4 issues
-      //cy.get(backlogList).should('be.visible').and('have.length', '1').within(() => {
-       //   cy.get(listIssue).should('have.length', '4')
-      //});
       //Opening the first issue
-      cy.get(listIssue).first().click()
+      cy.get(listIssue).first().next().click()
       cy.get(modalIssueDetails).should('be.visible')
-
       //invoke the issue name
-    
-      cy.get('[placeholder="Short summary"]').then(($value) => {
-        getText = $value.text()
+      cy.get('[placeholder="Short summary"]').invoke('text').then((getText) => {
+        //getText = value.text()
+        cy.log(getText)
       })
   });
 
@@ -40,7 +35,7 @@ describe('Issue deleting', () => {
     //Assert the issue is deleted from the board
     cy.get(backlogList).should('be.visible').and('have.length', '1').within(() => {
         cy.get(listIssue).should('not.contain',getText);
-
+        cy.log(getText)
 
     });
   });

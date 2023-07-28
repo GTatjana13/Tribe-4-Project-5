@@ -1,6 +1,3 @@
-/**
- * This is an example file and approach for POM in Cypress
- */
 import IssueModal from "../../pages/IssueModal";
 const modalConfirm = '[data-testid="modal:confirm"]';
 
@@ -22,13 +19,17 @@ describe('Issue delete', () => {
     IssueModal.clickDeleteButton();
     IssueModal.confirmDeletion();
     //Assert the issue is deleted
-    IssueModal.ensureIssueIsNotVisibleOnBoard(issueTitle);
+    //IssueModal.ensureIssueIsNotVisibleOnBoard(issueTitle);
+    IssueModal.checkIssueVisibilityOnBoard(issueTitle, false)
   });
 
+  
   it('Should cancel deletion process successfully', () => {
     IssueModal.clickDeleteButton();
     IssueModal.cancelDeletion();
     IssueModal.closeDetailModal();
-    IssueModal.ensureIssueIsVisibleOnBoard(issueTitle); 
+   // IssueModal.ensureIssueIsVisibleOnBoard(issueTitle); 
+   IssueModal.checkIssueVisibilityOnBoard(issueTitle, true)
   });
+  
 });
