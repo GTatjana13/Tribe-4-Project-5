@@ -1,3 +1,7 @@
+const priority = '[data-testid="select:priority"]';
+const expectedLength = 5;
+let priorityArray = [];
+
 describe('Issue details editing', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -7,7 +11,7 @@ describe('Issue details editing', () => {
     });
   });
 
-  it.only('Should update type, status, assignees, reporter, priority successfully', () => {
+  it('Should update type, status, assignees, reporter, priority successfully', () => {
     getIssueDetailsModal().within(() => {
       cy.get('[data-testid="select:type"]').click('bottomRight');
       cy.get('[data-testid="select-option:Story"]')
@@ -36,7 +40,7 @@ describe('Issue details editing', () => {
     });
   });
 
-  it.only('Should update title, description successfully', () => {
+  it('Should update title, description successfully', () => {
     const title = 'TEST_TITLE';
     const description = 'TEST_DESCRIPTION';
 
@@ -60,6 +64,28 @@ describe('Issue details editing', () => {
       cy.get('.ql-snow').should('have.text', description);
     });
   });
+
+  it.only('check priority dropdown',() =>{
+    //get and push selected value and print
+    cy.get(priority).invoke('text').then((selectedValue) => {
+      priorityArray.push(selectedValue);
+      cy.log(`${selectedValue}, ${priorityArray.length}`);
+    });
+    // Open the dropdown list
+    cy.get(priority).click();
+    // get and push all other priority values and print
+    cy.get('[data-testid^="select-option:"]').each((value) => {
+      const valueText = value.text();
+      priorityArray.push(valueText);
+      cy.log(`${valueText}, ${priorityArray.length}`);
+    //print all priorities
+    cy.log(priorityArray.join(', '));
+    })
+    .then(() => {
+      // Assert that the array has the same length as the predefined number
+       expect(priorityArray.length).to.equal(expectedLength);
+    }); 
+  })
 
   const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
 });
