@@ -1,6 +1,11 @@
 const priority = '[data-testid="select:priority"]';
 const expectedLength = 5;
 let priorityArray = [];
+const regex = /^[A-Z a-z]*$/ ;
+let containsOnlyLetters = [];
+const issueTitle = (' Many spaces ');
+let invokedTitle;
+const trimmedTitle = issueTitle.trim();
 
 describe('Issue details editing', () => {
   beforeEach(() => {
@@ -65,7 +70,7 @@ describe('Issue details editing', () => {
     });
   });
 
-  it.only('check priority dropdown',() =>{
+  it('check priority dropdown',() =>{
     //get and push selected value and print
     cy.get(priority).invoke('text').then((selectedValue) => {
       priorityArray.push(selectedValue);
@@ -85,7 +90,57 @@ describe('Issue details editing', () => {
       // Assert that the array has the same length as the predefined number
        expect(priorityArray.length).to.equal(expectedLength);
     }); 
-  })
+  });
+
+  it('checking that reporter name has only characters in it',() =>{
+    //invoke and print selected name
+    cy.get('[data-testid="select:reporter"]').invoke('text').then((selectedReporter) =>{
+      cy.log(`${selectedReporter}`);
+      //make sure that name contains only characters and space
+      containsOnlyLetters = regex.test(selectedReporter);
+      expect(containsOnlyLetters).to.be.true;
+    });
+    //open dropdown list
+    cy.get('[data-testid="select:reporter"]').click();
+    //invoke and print other names
+    cy.get('[data-testid^="select-option:"]').each((reporter) => {
+      const nameText = reporter.text();
+      cy.log(nameText); 
+      //make sure that names contain only characters and space
+      containsOnlyLetters = regex.test(nameText);
+      expect(containsOnlyLetters).to.be.true;
+    });
+  });
+
+  it('should remove unnecessary spaces from issue title',() => {
+    closeTheIssue();
+    createIssue();
+    cy.wait(7000);
+    //make sure that issue on the board
+    cy.get('[data-testid="board-list:backlog"]').should('be.visible');
+    cy.reload();
+    //invoke title from first issue and trim title
+    cy.get('[data-testid="list-issue"]').first().invoke('text').then((invokedIssueTitle) =>{
+      invokedTitle = invokedIssueTitle.trim();
+      expect(trimmedTitle).to.equal(invokedTitle);
+    });
+  });
 
   const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
 });
+
+function createIssue() {
+  cy.get('[data-testid="icon:plus"]').click();
+  cy.get('[data-testid="modal:issue-create"]').within(() => {
+    cy.get('[data-testid="select:type"]').click();
+    cy.get('[data-testid="select-option:Bug"]').trigger('click');
+    cy.get('.ql-editor').type('some description');
+    cy.get('input[name="title"]').type(issueTitle);
+    cy.get('button[type="submit"]').click();
+  });
+}
+function closeTheIssue() {
+  cy.get('[data-testid="modal:issue-details"]').within(() => {
+    cy.get('[data-testid="icon:close"]').first().click();
+  });
+}

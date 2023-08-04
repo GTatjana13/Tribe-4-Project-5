@@ -2,6 +2,12 @@ const priority = '[data-testid="select:priority"]';
 const expectedLength = 5;
 let priorityArray = [];
 let arrayOfElements = [];
+let reporterArray = [];
+const regex = /^[A-Z a-z]*$/ ;
+let containsOnlyLetters = [];
+const issueTitle = (' Many spaces ');
+let invokedTitle;
+const trimmedTitle = issueTitle.trim();//.replace(/\s+/g, ' ');
 describe('Issue details editing', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -73,7 +79,7 @@ describe('Issue details editing', () => {
     });
   
     // Open the dropdown list
-    cy.get(priority).click()//'bottomRight');
+    cy.get(priority).click()
   
     // Access the list of all priority options and loop through them
     cy.get('[data-testid^="select-option:"]').each((value) => {
@@ -108,29 +114,27 @@ describe('Issue details editing', () => {
     });
   })
 
- /* it('another method',() =>{
-      cy.get(priority),each(($el) =>{
-        cy.wrap($el).click();
-       // cy.get(#input).invoke('val').then(val => {
-          arrayOfElements.push(val);
-        })
-        then(() =>{
-          console.log(arrayOfElements);
-        })
-      }).then(() =>{
-        console.log(arrayOfelements).as('myArray1')
-      })
-
-      cy.get('@myArray1').then(myArray1 => {
-        cy.get('@myArray2').then(myArray2 => {
-
-        })
-      
-
+  it('checking that reporter name has only characters in it',() =>{
+    //invoke and print selected name
+    cy.get('[data-testid="select:reporter"]').invoke('text').then((selectedReporter) =>{
+      cy.log(`${selectedReporter}`);
+      //make sure that name contains only characters and space
+      containsOnlyLetters = regex.test(selectedReporter);
+      expect(containsOnlyLetters).to.be.true;
     });
+    //open dropdown list
+    cy.get('[data-testid="select:reporter"]').click();
+    //invoke and print other names
+    cy.get('[data-testid^="select-option:"]').each((reporter) => {
+      const nameText = reporter.text();
+      cy.log(nameText); 
+      //make sure that names contain only characters and space
+      containsOnlyLetters = regex.test(nameText);
+      expect(containsOnlyLetters).to.be.true;
+    });
+  });
 
 
-  });*/
   it('check priority dropdown',() =>{
     cy.get(priority).invoke('text').then((selectedValue) => {
       priorityArray.push(selectedValue);
@@ -156,7 +160,7 @@ describe('Issue details editing', () => {
 
 
 
-  it.only('trenning',() =>{
+  it('trenning',() =>{
     //get selected value and print
     cy.get('[data-testid="select:priority"]').invoke('text').then((selectedValue) => {
       priorityArray.push(selectedValue);
@@ -176,10 +180,36 @@ describe('Issue details editing', () => {
     .then(() =>{
       expect(priorityArray.length).to.equal(expectedLength)
     });
-    
-    
-  })
+  });
+  
+  it.only('should remove unnecessary spaces from issue title',() => {
+    closeTheIssue();
+    createIssue();
+    cy.wait(10000);
+    cy.get('[data-testid="board-list:backlog"]').should('be.visible');
+    cy.reload();
+    cy.get('[data-testid="list-issue"]').first().invoke('text').then((invokedIssueTitle) =>{
+      invokedTitle = invokedIssueTitle.trim();
+      expect(trimmedTitle).to.equal(invokedTitle);
+    });
+  });
 
 
   const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
 });
+
+function createIssue() {
+  cy.get('[data-testid="icon:plus"]').click();
+  cy.get('[data-testid="modal:issue-create"]').within(() => {
+    cy.get('[data-testid="select:type"]').click();
+    cy.get('[data-testid="select-option:Bug"]').trigger('click');
+    cy.get('.ql-editor').type('some description');
+    cy.get('input[name="title"]').type(issueTitle);
+    cy.get('button[type="submit"]').click();
+  });
+}
+function closeTheIssue() {
+  cy.get('[data-testid="modal:issue-details"]').within(() => {
+    cy.get('[data-testid="icon:close"]').first().click();
+  });
+}

@@ -108,7 +108,7 @@ describe('Issue create', () => {
   });
 
 
-  it.only('Should validate title is required field if missing', () => {
+  it('Should validate title is required field if missing', () => {
     //System finds modal for creating issue and does next steps inside of it
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       //Try to click create issue button without filling any data
