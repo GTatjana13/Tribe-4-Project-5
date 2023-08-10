@@ -1,6 +1,6 @@
 //import { faker, it } from '@faker-js/faker';
 //const randomTitle = faker.word.words(1);
-describe('Issue deleting', () => {
+/*describe('Issue deleting', () => {
     
   const modalIssueDetails = '[data-testid="modal:issue-details"]';
   const modalConfirm = '[data-testid="modal:confirm"]';
@@ -38,5 +38,36 @@ describe('Issue deleting', () => {
         cy.log(getText)
 
     });
+
+  it.only('trying different commands'),(=>{
+    cy.findAllByText('Each issue has a single reporter but can have multiple assignees.').click();
+  })
   });
-});
+});*/
+const numberOfPriorities = 5;
+ //task #4, workshop #17
+ it(`Check, that priority fields has ${numberOfPriorities} values`, () => {
+ let priorities = [];
+ //add already chosen priority to the list
+ cy.get('[data-testid="select:priority"]').invoke('text').then((extractedPriority) => {
+ priorities.push(extractedPriority);
+ })
+ //click to open priority dropdown - options
+ cy.get('[data-testid="select:priority"]').click();
+ //get number of options from the page
+ cy.get('[data-select-option-value]').then(($options) => {
+ const itemCount = Cypress.$($options).length;
+ //iterate through the options and
+ //add text from each option to the list
+ for (let index = 0; index < itemCount; index++) {
+ cy.get('[data-select-option-value]')
+ .eq(index).invoke('text').then((extractedPriority) => {
+ priorities.push(extractedPriority);
+ if (index == (itemCount - 1)) {
+ cy.log("TOTAL calculated array length: " + priorities.length);
+ expect(priorities.length).to.be.eq(numberOfPriorities);
+ }
+ });
+ };
+ });
+ });
